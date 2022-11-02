@@ -5,11 +5,11 @@
  *  Template Name: Checkfront Booking Page
  *
  *  The easiest way to use Checkfront is to create a new post in the
- *  wordpres editor, and paste in the Checkfront shortcode: [checkfront]
- *  There are additinal options you can pass to the shortcode to change
+ *  Wordpress editor, and paste in the Checkfront shortcode: [checkfront]
+ *  There are additional options you can pass to the shortcode to change
  *  the behavour or layout.
  *
- *  Alternativly, if you wish to build Checkfront into a theme, you can
+ *  Alternatively, if you wish to build Checkfront into a theme, you can
  *  use this sample as a starting point.  You will need to tweak it
  *  with your theme.
  *
@@ -27,37 +27,31 @@
  */
 
 
-$schema = ($_SERVER['HTTPS'] != "on") ? 'http' : 'https';
-// replace demo.checkfront.com with your checkfront host
-// if using https, be sure and change the schema in the pipe
+$schema = ($_SERVER['HTTPS'] !== "on") ? 'http' : 'https';
+// replace demo.checkfront.com with your Checkfront host
 
 include_once('CheckfrontWidget.php');
-$Checkfront = new CheckfrontWidget(
-	array(
-		'host'=>'demo.checkfront.com', // your checkfront host
-		'plugin_url'=>"{$schema}://{$_SERVER['HTTP_HOST']}/wp-content/plugins/checkfront-wp-booking/",
-		'interface' =>'v2', 
-		'provider' =>'wordpress'
-	)
-);
+$Checkfront = new CheckfrontWidget([
+	'host'       => 'demo.checkfront.com', // your Checkfront host url
+	'plugin_url' => '/wp-content/plugins/checkfront-wp-booking/',
+	'provider'   => 'wordpress',
+]);
 
-
-// add the widget include to your theme header.  you could remove this and it in manually if preferrer. 
-function checkfront_custom_head() {
+function checkfront_enqueue_scripts() {
+	// Widget iFrame loading support
 	global $Checkfront;
-	echo ' <script src="//' . $Checkfront->host . '/lib/interface.js?v' . $Checkfront->interface_lib_version . '" type="text/javascript"></script>';
+	wp_enqueue_script('cf/interface.js', "//{$Checkfront->host}/lib/interface--{$Checkfront->interface_version}.js");
 }
-add_action('wp_head', 'checkfront_custom_head');
+add_action('wp_enqueue_scripts', 'checkfront_enqueue_scripts');
 
 
 get_header($template_name);
 
+// add extra content here
 
-echo $Checkfront->render(
-	array(
-		'options'=>'tabs,compact',
-		'style'=>'background-color: #fff; color: #000; font-family: Arial',
-	)
-);
+echo $Checkfront->render([
+	'options' => 'tabs,compact',
+	'style'   => 'background-color: fff; color: 000; font-family: Arial',
+]);
 
 get_footer($template_name);

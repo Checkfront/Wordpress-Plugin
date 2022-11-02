@@ -1,7 +1,7 @@
 # Checkfront Online Booking System
 
 Contributors: checkfront
-Stable tag: trunk
+Stable tag: 3.6
 Tags: Booking, Booking System, Reservation, Reservation System, Online Booking, Booking Engine, Tours, Tour Operator, Booking Plugin, Reservation Plugin, Booking Software, Reservation Payment System, Activity Booking, Rental Booking, Reservation Payments, Tour Booking, Passbook, Availability, Payments, Bookings
 Requires at least: 2.0
 License: GPLv2 or later
@@ -72,6 +72,9 @@ The combined CMS features of WordPress with the power, flexibility and security 
 
 ### Changelog
 
+* *November 2nd 2022:*
+  * Wordpress 6.1 compatibility
+  * Removed deprecated sidebar widget
 * *February 25th 2021:*
   * Fixed broken image links in plugin setup
 * *September 17th 2020:*

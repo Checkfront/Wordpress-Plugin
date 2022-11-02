@@ -4,7 +4,7 @@
 Plugin Name: Checkfront Online Booking System
 Plugin URI: https://www.checkfront.com/wordpress
 Description: Connects Wordpress to the Checkfront Online Booking System.  Checkfront allows Tour, Activity, Accommodation, and Rental businesses to manage their availability, track inventories, centralize reservations, and process online payments. This plugin connects your WordPress site to your Checkfront account, and provides a powerful real-time booking interface – right within your existing website.
-Version: 3.5
+Version: 3.6
 Author: Checkfront Inc.
 Author URI: https://www.checkfront.com/
 Copyright: 2008 - 2022 Checkfront Inc
@@ -63,13 +63,11 @@ function checkfront_conf()
 function checkfront_setup()
 {
 	global $Checkfront;
-	wp_enqueue_script('jquery'); 
-	wp_enqueue_script(WP_PLUGIN_URL . '/setup.js'); 
 	include(dirname(__FILE__).'/setup.php');
 }
 
-// Init Checkfront, include any required js / css only when required
-function checkfront_head()
+// include required js, if the page will use it
+function checkfront_enqueue_scripts()
 {
 	global $post, $Checkfront;
 	if (!isset($Checkfront->host)) {
@@ -81,7 +79,7 @@ function checkfront_head()
 		return;
 	}
 
-	echo ' <script src="//' . $Checkfront->host . '/lib/interface--' . $Checkfront->interface_version . '.js" type="text/javascript"></script>' ."\n";
+	wp_enqueue_script('cf/interface.js', "//{$Checkfront->host}/lib/interface--{$Checkfront->interface_version}.js", ['jquery']);
 	// Disable Comments
 	add_filter('comments_open', 'checkfront_comments_open_filter', 10, 2);
 	add_filter('comments_template', 'checkfront_comments_template_filter', 10, 1);
@@ -108,8 +106,8 @@ function checkfront_comments_template_filter($file)
 // plugin init
 function checkfront_init()
 {
-	add_action('wp_head', 'checkfront_head');
 	wp_enqueue_script('jquery');
+	add_action('wp_enqueue_scripts', 'checkfront_enqueue_scripts');
 }
 
 // Set admin meta

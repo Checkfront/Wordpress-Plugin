@@ -1,5 +1,5 @@
 <?php
-if (isset($_POST['checkfront_host'])) {
+if (!empty($_POST['checkfront_host'])) {
 	if ($host = $Checkfront->valid_host($_POST['checkfront_host'])) {
 		update_option('checkfront_host', trim($host));
 		$Checkfront->host = $host;
@@ -10,25 +10,6 @@ if (isset($_POST['checkfront_host'])) {
 }
 ?>
 <div style="width: 800px">
-	<script type="text/javascript">
-		jQuery(document).ready(function() {
-
-			function clean(str) {
-				return str.replace(/[^\d\w\-\_ , "]/ig, '');
-			}
-
-			jQuery('#shortcode_generator').click(function() {
-				height = 600;
-				width = 1150;
-				var cwidth = (window.screen.width - width) / 2;
-				var cheight = (window.screen.height - height) / 2;
-				var param = "location=yes,status=yes,resizable=yes,scrollbars=yes,menubar=yes,toolbar=yes,width=" + width + ',height=' + height + ',left=' + cwidth + ',top=' + cheight;
-				var sw = window.open(this.href, '', param);
-				sw.focus();
-				return false;
-			});
-		});
-	</script>
 	<div style="width: 500px; float: left">
 		<h1>Online Bookings For Wordpress</h1>
 		<p style="font-size: 1.1em; padding-right: 2em">Checkfront is a powerful online booking system that allows businesses to manage their inventories, centralize reservations, and process payments.<br /><br /><strong>All bookings with Checkfront are <u>commission free</u>.</strong></p>
@@ -47,11 +28,6 @@ if (isset($_POST['checkfront_host'])) {
 			<a href="https://www.checkfront.com/?src=wp-setup"><img src="//cdn-production.checkfront.com/brand/Checkfront_Color.png" height="40" alt="Checkfront" /></a><br />
 			<strong>Smart, Simplified Online Bookings</strong><br /><br />
 		</div>
-		<iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fcheckfront.bookings&amp;send=false&amp;layout=button_count&amp;width=250&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21&amp;appId=132896805841" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:290px; margin-bottom: 10px; height:21px;" allowTransparency="true"></iframe>
-		<!-- Place this tag in your head or just before your close body tag -->
-		<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
-		<!-- Place this tag where you want the +1 button to render -->
-		<div class="g-plusone" data-size="small" data-annotation="inline" data-href="https://www.checkfront.com/?src=wp-setup"></div>
 		<br />
 		<br />
 		<a href="https://twitter.com/Checkfront" style="text-decoration: none; background: url('https://www.checkfront.com/wp-content/themes/checkfront-2022/resources/images/icons/twitter.svg') left center no-repeat; background-size: 16px; padding: 5px 5px 5px 20px" target="_blank">Follow us on Twitter</a><br /><br />
@@ -64,9 +40,9 @@ if (isset($_POST['checkfront_host'])) {
 			<div class="postbox">
 				<h3 class="hndle">Setup</h3>
 				<?php
-				if (isset($cf_msg)) { ?>
+				if (!empty($cf_msg)) { ?>
 					<div style="background-color: rgb(255, 251, 204); margin:1em 1em 0em 1em" id="message" class="updated fade">
-						<p><strong><?php echo $cf_msg ?></strong></p>
+						<p><strong><?php echo esc_html($cf_msg) ?></strong></p>
 					</div>
 				<?php } ?>
 				<div class="inside" style="padding: 0 10px">
@@ -74,7 +50,7 @@ if (isset($_POST['checkfront_host'])) {
 						<tbody>
 							<tr valign="top">
 								<th scope="row"><label for="checkfront_email">Checkfront Host Url:</label></th>
-								<td nowrap>https://<input name="checkfront_host" style="width: 15em;font-weight: bold" id="CF_id" value="<?php echo $Checkfront->host ?>" class="regular-text" type="text" /><br /><em style="color: #888">Eg: demo.checkfront.com</em> </td>
+								<td nowrap>https://<input name="checkfront_host" style="width: 15em;font-weight: bold" id="CF_id" value="<?php echo esc_attr($Checkfront->host) ?>" class="regular-text" type="text" /><br /><em style="color: #888">Eg: demo.checkfront.com</em> </td>
 								<td id="CF_status"><em>Location of your Checkfront Admin</td>
 							</tr>
 							<tr>
