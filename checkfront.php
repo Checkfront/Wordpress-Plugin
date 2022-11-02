@@ -1,12 +1,13 @@
-<?php 
-/* 
+<?php
+
+/*
 Plugin Name: Checkfront Online Booking System
-Plugin URI: http://www.checkfront.com/extend/wordpress
-Description: Connects Wordpress to the Checkfront Online Booking, Reservation and Availability System.  Checkfront integrates into popular payment systems including Paypal, Authorize.net, SagePay and integrates into Salesforce, Xero and Google Apps.  Transactions, Reporting and Bookings are securly stored in the Checkfront backoffice app, while providing a self service booking portal on your own website.
-Version: 2.5.6
+Plugin URI: https://www.checkfront.com/wordpress
+Description: Connects Wordpress to the Checkfront Online Booking System.  Checkfront allows Tour, Activity, Accommodation, and Rental businesses to manage their availability, track inventories, centralize reservations, and process online payments. This plugin connects your WordPress site to your Checkfront account, and provides a powerful real-time booking interface – right within your existing website.
+Version: 3.5
 Author: Checkfront Inc.
-Author URI: http://www.checkfront.com/
-Copyright: 2008 - 2012 Checkfront Inc 
+Author URI: https://www.checkfront.com/
+Copyright: 2008 - 2022 Checkfront Inc
 */
 
 if ( ! defined( 'WP_PLUGIN_URL' ) ) define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
@@ -15,39 +16,43 @@ if ( ! defined( 'WP_PLUGIN_URL' ) ) define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/p
  * Wordpress Required Functions
 /* ------------------------------------------------------*/
 
-//Shortcode [clean-conract parameter="value"]
-function checkfront_func($cnf, $content=null) {
-	$cnf=shortcode_atts(array(
-		'category_id' => '0',
-		'item_id' => '0',
-		'tid' => '',
-		'discount' => '',
-		'options' => '',
-		'style' => '',
-		'width' => '',
-		'theme' => '',
-		'category_id'=>'',
-		'item_id'=>'',
-	), $cnf);
+//Shortcode [checkfront parameter="value"]
+function checkfront_func($cnf, $content=null)
+{
+	$cnf = shortcode_atts([
+		'category_id'=> '',
+		'item_id'    => '',
+		'date'       => '',
+		'start_date' => '',
+		'end_date'   => '',
+		'tid'        => '',
+		'discount'   => '',
+		'options'    => '',
+		'style'      => '',
+		'host'       => '',
+		'width'      => '',
+		'theme'      => '',
+		'lang_id'    => '',
+		'partner_id' => '',
+		'popup'      => '',
+	], $cnf);
 	return checkfront($cnf);
 }
 
 // Global shortcode call
-function checkfront($cnf) {
+function checkfront($cnf)
+{
 	global $Checkfront;
-	if(is_page() or is_single()) {
+	if (is_page() || is_single()) {
 		// Wordpress will try and auto format paragraphs -- remove new lines
 		return str_replace("\n",'',$Checkfront->render($cnf));
 	}
 }
 
 // Wordpress Admin Hook
-function checkfront_conf() {
-	global $Checkfront;
-	$icon = WP_PLUGIN_URL . '/' . basename(dirname(__FILE__)) . '/icon.png';
-	add_menu_page('Setup', 'Checkfront', 'read', __FILE__, 'checkfront_setup',$icon);
-
-	if ( function_exists('add_submenu_page') ) {
+function checkfront_conf()
+{
+	if (function_exists('add_submenu_page')) {
 		add_submenu_page('plugins.php', __('Checkfront'), __('Checkfront'), 'manage_options', 'checkfront', 'checkfront_setup');
 	}
 
@@ -55,7 +60,8 @@ function checkfront_conf() {
 }
 
 // Wordpress Setup Page
-function checkfront_setup() {
+function checkfront_setup()
+{
 	global $Checkfront;
 	wp_enqueue_script('jquery'); 
 	wp_enqueue_script(WP_PLUGIN_URL . '/setup.js'); 
@@ -63,109 +69,129 @@ function checkfront_setup() {
 }
 
 // Init Checkfront, include any required js / css only when required
-function checkfront_head() { 
-
+function checkfront_head()
+{
 	$embedded = 0;
 
-	$Checkfront->arg['widget'] = 0;
-
 	global $post, $Checkfront;
-	if(!isset($Checkfront->host)) return;
+	if (!isset($Checkfront->host)) {
+		return;
+	}
 	
-	// does this page have any shortcode.  If not, back out.
-	if($pos = stripos($post->post_content,'[checkfront') or $pos === 0) $embedded = 1;
+	// does this page have any shortcode. If not, back out.
+	$pos = stripos($post->post_content, '[checkfront');
+	if ($pos || $pos === 0) {
+		$embedded = 1;
+	}
 
-	// v1 widget
-	if($Checkfront->arg['widget']) {
+	// calendar widget
+	if ($Checkfront->arg['widget']) {
 		$checkfront_widget_post = get_option("checkfront_widget_post");
 		$checkfront_widget_page = get_option("checkfront_widget_page");
-		$checkfront_widget_booking  = get_option("checkfront_widget_booking");
+		$checkfront_widget_booking = get_option("checkfront_widget_booking");
 
-		if($embedded and !$checkfront_widget_booking) { 
+		if ($embedded && !$checkfront_widget_booking) { 
 			$Checkfront->arg['widget'] = 0;
 		} else {
-			if(is_page() and !$checkfront_widget_page) $Checkfront->arg['widget'] = 0;
-			if(is_single() and !$checkfront_widget_post) $Checkfront->arg['widget'] = 0;
-
+			if (is_page() && !$checkfront_widget_page) {
+				$Checkfront->arg['widget'] = 0;
+			}
+			if (is_single() && !$checkfront_widget_post) {
+				$Checkfront->arg['widget'] = 0;
+			}
 		}
 	}
 
-	if ($Checkfront->arg['widget']  or $embedded) {
-		if($Checkfront->interface == 'v1' or $Checkfront->arg['widget']) {
-			echo ' <script src="//' . $Checkfront->host . '/www/client.js?wp" type="text/javascript"></script>' ."\n";
-			echo ' <link rel="stylesheet" href="//' . $Checkfront->host . '/www/client.css?wp" type="text/css" media="all" />' . "\n";
-		}
-
-		if($Checkfront->interface == 'v2') {
-			echo ' <script src="//' . $Checkfront->host . '/lib/interface--' . $Checkfront->interface_build . '.js" type="text/javascript"></script>' ."\n";
-		}
-		if($embedded) {
+	if ($Checkfront->arg['widget'] || $embedded) {
+		echo ' <script src="//' . $Checkfront->host . '/lib/interface--' . $Checkfront->interface_version . '.js" type="text/javascript"></script>' ."\n";
+		if ($embedded) {
 			// Disable Comments
 			add_filter('comments_open', 'checkfront_comments_open_filter', 10, 2);
 			add_filter('comments_template', 'checkfront_comments_template_filter', 10, 1);
 
-			//disable auto p
-			//remove_filter ('the_content', 'wpautop');
-			////disable wptexturize
+			// disable auto p
+			// remove_filter ('the_content', 'wpautop');
+
+			// disable wptexturize
 			remove_filter('the_content', 'wptexturize');
 		}
 	}
 }
 
 // disable comments on booking pagfe
-function checkfront_comments_open_filter($open, $post_id=null) {
-	 return $open;
+function checkfront_comments_open_filter($open, $post_id=null)
+{
+	return $open;
 }
 
 // disable comment include (required to clear)
-function checkfront_comments_template_filter($file) {
-    return dirname(__FILE__).'/xcomments.html';
+function checkfront_comments_template_filter($file)
+{
+	return dirname(__FILE__).'/xcomments.html';
 }
 
-// pligin init
-function checkfront_init() {
+// plugin init
+function checkfront_init()
+{
 	global $Checkfront;
-	wp_register_sidebar_widget('checkfront_widget', 'Checkfront', 'checkfront_widget',array('description' => __('Availability calendar and search')));
+	wp_register_sidebar_widget(
+		'checkfront_widget',
+		'Checkfront',
+		'checkfront_widget',
+		['description' => __('Availability calendar and search')]
+	);
+
 	wp_register_widget_control('checkfront_widget', 'Checkfront', 'checkfront_widget_ctrl');
-	add_action('wp_head', 'checkfront_head'); 
-	# required includes
-	wp_enqueue_script('jquery'); 
+	add_action('wp_head', 'checkfront_head');
+	// required includes
+	wp_enqueue_script('jquery');
+	if (!isset($Checkfront->arg)) {
+		$Checkfront->arg = [];
+	}
 
 	$Checkfront->arg['widget'] = (is_active_widget('checkfront_widget')) ? 1 : 0;
 }
 
 // Set admin meta
-function checkfront_plugin_meta($links, $file) {
-
+function checkfront_plugin_meta($links, $file)
+{
 	// create link
-	if (basename($file,'.php') == 'checkfront') {
+	if (basename($file, '.php') == 'checkfront') {
 		return array_merge(
 			$links,
-			array( 
-				'<a href="plugins.php?page=checkfront">' . __('Settings') . '</a>',
-				'<a href="http://www.checkfront.com/extend/wordpress/">' . __('Setup Guide') . '</a>',
-				'<a href="http://www.checkfront.com/faq/">' . __('FAQ') . '</a>',
-				'<a href="https://www.checkfront.com/login/">' . __('Checkfront Login') . '</a>',
-		) 
+			[
+				'<a href="plugins.php?page=checkfront">' . __('Setup') . '</a>',
+				'<a href="https://www.checkfront.com/support/?src=wp-setup">' . __('Support') . '</a>',
+				'<a href="https://www.checkfront.com/login/?src=wp-setup">' . __('Login') . '</a>',
+			]
 		);
 	}
 	return $links;
 }
 
 // Show widget
-function checkfront_widget() {
+function checkfront_widget()
+{
 	global $Checkfront;
-	if(!$Checkfront->arg['widget']) return;
+	if (!$Checkfront->arg['widget']) {
+		return;
+	}
 	$checkfront_widget_title = get_option("checkfront_widget_title");
-	if(!empty($checkfront_widget_title)) echo '<h2 class="widgettitle">' . $checkfront_widget_title . '</h2>';
-	echo '<div id="CF_cal" class="' . $Checkfront->host . '"></div>';
-	echo $Checkfront->droplet_set();
+	if ($checkfront_book_url = get_option("checkfront_book_url")) {
+		if (!(strpos('http', $checkfront_book_url) === 0)) {
+			$checkfront_book_url = 'http://' . $_SERVER['HTTP_HOST'] . $checkfront_book_url;
+		}
+	}
+	if (!empty($checkfront_widget_title)) {
+		echo '<h2 class="widgettitle">' . $checkfront_widget_title . '</h2>';
+	}
+	echo '<div id="checkfront-cal"><iframe allowTransparency=true border=0 style="border:0; height: 260px;" src="//' . $Checkfront->host . '/reserve/widget/calendar/?return=' . urlencode($checkfront_book_url) . '"></iframe></div>';
 }
 
 // Widget control
-function checkfront_widget_ctrl() {
-
-	if($_POST['checkfront_update']) {
+function checkfront_widget_ctrl()
+{
+	if ($_POST['checkfront_update']) {
 		update_option("checkfront_book_url", $_POST['checkfront_book_url']);
 		update_option("checkfront_widget_title", $_POST['checkfront_widget_title']);
 		update_option("checkfront_widget_post ", $_POST['checkfront_widget_post']);
@@ -175,8 +201,8 @@ function checkfront_widget_ctrl() {
 
 	$checkfront_book_url = get_option("checkfront_book_url");
 
-	// try and find booking page in content 
-	if(!$checkfront_book_url) {
+	// try and find booking page in content
+	if (!$checkfront_book_url) {
 		global $wpdb;
 		$checkfront_book_url = $wpdb->get_var("select guid FROM `{$wpdb->prefix}posts` where post_content like '%[checkfront%' and post_type = 'page' limit 1");
 		update_option("checkfront_widget_url", $checkfront_book_url);
@@ -199,25 +225,22 @@ function checkfront_widget_ctrl() {
 }
 
 /*
- Create Checkront class.  If you wish to include this in a custom theme (not shortcode)
- see the custom-theme-sample.php
+ Create Checkfront class. If you wish to include this in a custom theme (not shortcode)
+ see the checkfront-custom-template-sample.php
 */
 // Include Checkfront Widget Class
 include_once(dirname(__FILE__).'/CheckfrontWidget.php');
 
-$Checkfront = new CheckfrontWidget(
-	array(
-		'host'=>get_option('checkfront_host'),
-		'pipe_url'=>WP_PLUGIN_URL . '/' . basename(dirname(__FILE__)) . '/pipe.html',
-		'legacy_mode'=>get_option('checkfront_mode'),
-		'interface' =>get_option('checkfront_interface'),
-		'provider' =>'wordpress',
-		'load_msg'=>__('Searching Availability'),
-		'continue_msg'=>__('Continue to Secure Booking System'),
-	)
-);
+$Checkfront = new CheckfrontWidget([
+	'host' => get_option('checkfront_host'),
+	'pipe_url' => '/' . basename(WP_CONTENT_URL) . '/plugins/' . basename(dirname(__FILE__)) . '/pipe.html',
+	'provider' => 'wordpress',
+	'load_msg' => __('Searching Availability'),
+	'continue_msg' => __('Continue to Secure Booking System'),
+]);
 
 add_shortcode('checkfront', 'checkfront_func');
 add_action('admin_menu', 'checkfront_conf');
 add_action('init', 'checkfront_init');
+
 ?>
