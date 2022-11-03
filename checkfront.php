@@ -91,7 +91,7 @@ function checkfront_enqueue_scripts()
 	remove_filter('the_content', 'wptexturize');
 }
 
-// disable comments on booking pagfe
+// disable comments on booking page
 function checkfront_comments_open_filter($open, $post_id=null)
 {
 	return $open;

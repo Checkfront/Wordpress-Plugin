@@ -31,7 +31,7 @@ This plugin provides a powerful **real-time booking interface** that blends in w
 * Support for multiple languages and international currencies
 * Multi-gateway payment processing including Stripe, Square, Paypal, Authorize.net, SagePay & dozens more
 * SSL support keeps the customer on your website while making payment
-* Support for short codes, or custom theme pages in Wordpress.
+* Support for shortcodes, or custom theme pages in Wordpress.
 * Tailored onboarding session and a 24/7 support team
 * **No commissions!**
 

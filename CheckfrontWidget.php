@@ -150,7 +150,7 @@ class CheckfrontWidget
 	}
 
     /**
-     * clean short code params
+     * clean shortcode params
      *
      * @param array $cnf shortcode paramaters
      * @return array $cnf formatted paramaters
