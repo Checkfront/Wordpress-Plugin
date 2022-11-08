@@ -35,6 +35,7 @@ function checkfront_func($cnf, $content=null)
 		'lang_id'    => '',
 		'partner_id' => '',
 		'popup'      => '',
+		'widget_id'  => '',
 	], $cnf);
 	return checkfront($cnf);
 }
