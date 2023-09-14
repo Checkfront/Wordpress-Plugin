@@ -1,5 +1,10 @@
 <?php
-if (!empty($_POST['checkfront_host'])) {
+if (!empty($_POST['checkfront_host']) && !empty($_POST['_wpnonce'])) {
+	//prevent CSRF attacks
+	if (!wp_verify_nonce($_POST['_wpnonce'], 'update_checkfront_host')) {
+		exit;
+	}
+
 	if ($host = $Checkfront->valid_host($_POST['checkfront_host'])) {
 		update_option('checkfront_host', trim($host));
 		$Checkfront->host = $host;
@@ -36,6 +41,7 @@ if (!empty($_POST['checkfront_host'])) {
 	</div>
 	<br style="clear: both" />
 	<form method="post" action="">
+		<?php wp_nonce_field('update_checkfront_host'); ?>
 		<div class="metabox-holder meta-box-sortables pointer">
 			<div class="postbox">
 				<h3 class="hndle">Setup</h3>
