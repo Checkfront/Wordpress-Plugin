@@ -4,10 +4,10 @@
 Plugin Name: Checkfront Online Booking System
 Plugin URI: https://www.checkfront.com/wordpress
 Description: Connects Wordpress to the Checkfront Online Booking System.  Checkfront allows Tour, Activity, Accommodation, and Rental businesses to manage their availability, track inventories, centralize reservations, and process online payments. This plugin connects your WordPress site to your Checkfront account, and provides a powerful real-time booking interface – right within your existing website.
-Version: 3.6
+Version: 3.7
 Author: Checkfront Inc.
 Author URI: https://www.checkfront.com/
-Copyright: 2008 - 2022 Checkfront Inc
+Copyright: 2008 - 2023 Checkfront Inc
 */
 
 if ( ! defined( 'WP_PLUGIN_URL' ) ) define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
