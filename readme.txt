@@ -5,7 +5,7 @@ Stable tag: 3.7
 Tags: Booking, Booking System, Reservation, Reservation System, Online Booking, Booking Engine, Tours, Tour Operator, Booking Plugin, Reservation Plugin, Booking Software, Reservation Payment System, Activity Booking, Rental Booking, Reservation Payments, Tour Booking, Passbook, Availability, Payments, Bookings
 Requires at least: 2.0
 License: GPLv2 or later
-Tested up to: 6.3.1
+Tested up to: 6.4
 
 The Premier Wordpress Plugin for Easy Online Booking of Tours, Activities, Rentals & Accommodations.
 
